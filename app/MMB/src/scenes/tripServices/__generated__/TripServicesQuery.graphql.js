@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash c3ad66eafcc9b69ada372c63ca417753
+ * @relayHash b7350181860ee735e33a4835c024c896
  */
 
 /* eslint-disable */
@@ -12,6 +12,7 @@ import type { ConcreteRequest } from 'relay-runtime';
 type CarRentalMenuItem$ref = any;
 type LoungeMenuItem$ref = any;
 type ParkingMenuItem$ref = any;
+type TransporationMenuItem$ref = any;
 export type TripServicesQueryVariables = {|
   bookingId: number,
   authToken: string,
@@ -19,7 +20,7 @@ export type TripServicesQueryVariables = {|
 export type TripServicesQueryResponse = {|
   +singleBooking: ?{|
     +availableWhitelabeledServices: ?{|
-      +$fragmentRefs: CarRentalMenuItem$ref & LoungeMenuItem$ref & ParkingMenuItem$ref
+      +$fragmentRefs: CarRentalMenuItem$ref & LoungeMenuItem$ref & ParkingMenuItem$ref & TransporationMenuItem$ref
     |}
   |}
 |};
@@ -37,6 +38,7 @@ query TripServicesQuery(
       ...CarRentalMenuItem
       ...LoungeMenuItem
       ...ParkingMenuItem
+      ...TransporationMenuItem
     }
     id
   }
@@ -69,6 +71,18 @@ fragment LoungeMenuItem on WhitelabeledServices {
 fragment ParkingMenuItem on WhitelabeledServices {
   parking {
     whitelabelURL
+  }
+}
+
+fragment TransporationMenuItem on WhitelabeledServices {
+  lounge {
+    relevantAirports {
+      whitelabelURL
+      location {
+        ...LocationPopupButton
+        id
+      }
+    }
   }
 }
 
@@ -180,7 +194,7 @@ return {
   "operationKind": "query",
   "name": "TripServicesQuery",
   "id": null,
-  "text": "query TripServicesQuery(\n  $bookingId: Int!\n  $authToken: String!\n) {\n  singleBooking(id: $bookingId, authToken: $authToken) {\n    __typename\n    availableWhitelabeledServices {\n      ...CarRentalMenuItem\n      ...LoungeMenuItem\n      ...ParkingMenuItem\n    }\n    id\n  }\n}\n\nfragment CarRentalMenuItem on WhitelabeledServices {\n  carRental {\n    relevantCities {\n      whitelabelURL\n      location {\n        ...LocationPopupButton\n        id\n      }\n    }\n  }\n}\n\nfragment LoungeMenuItem on WhitelabeledServices {\n  lounge {\n    relevantAirports {\n      whitelabelURL\n      location {\n        ...LocationPopupButton\n        id\n      }\n    }\n  }\n}\n\nfragment ParkingMenuItem on WhitelabeledServices {\n  parking {\n    whitelabelURL\n  }\n}\n\nfragment LocationPopupButton on Location {\n  city {\n    name\n  }\n  locationId\n  ...CountryFlag\n}\n\nfragment CountryFlag on Location {\n  countryFlagURL\n}\n",
+  "text": "query TripServicesQuery(\n  $bookingId: Int!\n  $authToken: String!\n) {\n  singleBooking(id: $bookingId, authToken: $authToken) {\n    __typename\n    availableWhitelabeledServices {\n      ...CarRentalMenuItem\n      ...LoungeMenuItem\n      ...ParkingMenuItem\n      ...TransporationMenuItem\n    }\n    id\n  }\n}\n\nfragment CarRentalMenuItem on WhitelabeledServices {\n  carRental {\n    relevantCities {\n      whitelabelURL\n      location {\n        ...LocationPopupButton\n        id\n      }\n    }\n  }\n}\n\nfragment LoungeMenuItem on WhitelabeledServices {\n  lounge {\n    relevantAirports {\n      whitelabelURL\n      location {\n        ...LocationPopupButton\n        id\n      }\n    }\n  }\n}\n\nfragment ParkingMenuItem on WhitelabeledServices {\n  parking {\n    whitelabelURL\n  }\n}\n\nfragment TransporationMenuItem on WhitelabeledServices {\n  lounge {\n    relevantAirports {\n      whitelabelURL\n      location {\n        ...LocationPopupButton\n        id\n      }\n    }\n  }\n}\n\nfragment LocationPopupButton on Location {\n  city {\n    name\n  }\n  locationId\n  ...CountryFlag\n}\n\nfragment CountryFlag on Location {\n  countryFlagURL\n}\n",
   "metadata": {},
   "fragment": {
     "kind": "Fragment",
@@ -220,6 +234,11 @@ return {
               {
                 "kind": "FragmentSpread",
                 "name": "ParkingMenuItem",
+                "args": null
+              },
+              {
+                "kind": "FragmentSpread",
+                "name": "TransporationMenuItem",
                 "args": null
               }
             ]
@@ -322,5 +341,5 @@ return {
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = '37f6cab3a641f4549bde8c052835f3e8';
+(node/*: any*/).hash = '72850b1db5c870340143e37ab07bfdc7';
 module.exports = node;

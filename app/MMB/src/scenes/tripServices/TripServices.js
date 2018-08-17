@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Translation } from '@kiwicom/mobile-localization';
 import { ScrollView } from 'react-native';
-import { TextIcon, WebView } from '@kiwicom/mobile-shared';
+import { TextIcon, WebView, TextInput } from '@kiwicom/mobile-shared';
 import { PublicApiRenderer, graphql } from '@kiwicom/mobile-relay';
 import {
   TitledMenuGroup,
@@ -18,6 +18,7 @@ import LoungeMenuItem from './LoungeMenuItem';
 import ParkingMenuItem from './ParkingMenuItem';
 import InsuranceMenuItem from './InsuranceMenuItem';
 import CarRentalMenuItem from './CarRentalMenuItem';
+import TransporationMenuItem from './TransporationMenuItem';
 import InsuranceOverviewSceneContainer from './insurance/insuranceOverviewScene/InsuranceOverviewSceneContainer';
 import InsuranceSelectionSceneContainer from './insurance/insuranceSelectionScene/InsuranceSelectionSceneContainer';
 import PaymentScene from './insurance/PaymentScene';
@@ -44,6 +45,10 @@ export default class TripServices extends React.Component<Props> {
 
   openInsurance = () => {
     this.navigate('mmb.trip_services.insurance');
+  };
+
+  openTransportationMap = () => {
+    this.props.navigation.navigate('TransportationAddressPickerScreen');
   };
 
   renderLocalServices = (rendererProps: TripServicesQueryResponse) => {
@@ -81,11 +86,9 @@ export default class TripServices extends React.Component<Props> {
             data={availableWhitelabeledServices}
             onOpenWebview={this.openWebview}
           />
-          <TodoMenuItem
-            title={
-              <Translation id="mmb.trip_services.local_services.transportation" />
-            }
-            icon={<TextIcon code="<" />}
+          <TransporationMenuItem
+            data={availableWhitelabeledServices}
+            onOpenTransportationMap={this.openTransportationMap}
           />
         </TitledMenuGroup>
       </ScrollView>
@@ -104,6 +107,7 @@ export default class TripServices extends React.Component<Props> {
                     ...CarRentalMenuItem
                     ...LoungeMenuItem
                     ...ParkingMenuItem
+                    ...TransporationMenuItem
                   }
                 }
               }

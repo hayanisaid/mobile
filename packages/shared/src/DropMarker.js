@@ -8,6 +8,7 @@ import Icon from './icons/Icon';
 
 type Props = {|
   size?: number,
+  color?: string,
 |};
 
 const createStyles = (size: number) =>
@@ -36,9 +37,14 @@ const createStyles = (size: number) =>
  *   |       |
  *   `-------`
  */
-export default function DropMarker({ size = 50 }: Props) {
+export default function DropMarker({ size = 50, color }: Props) {
   const styles = createStyles(size);
   return (
-    <Icon name="place" size={size} color={Color.brand} style={styles.icon} />
+    <Icon
+      name="place"
+      size={size}
+      color={color || Color.brand}
+      style={styles.icon}
+    />
   );
 }

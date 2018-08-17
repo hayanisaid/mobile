@@ -212,6 +212,15 @@ export default {
   'mmb.trip_services.insurance.selection.more_info.terms':
     'Terms and Conditions',
 
+  // MMB Transportation
+  'mmb.trip_services.transportation.map.title': 'Get transportation',
+  'mmb.trip_services.transportation.map.right_button': 'Book ride',
+  'mmb.trip_services.transportation.map.marker_location_button':
+    'Tap to select location or start writing add...',
+  'mmb.trip_services.transportation.map.current_position_alert':
+    'Location services are not available. You can enable them in settings.',
+  'mmb.trip_services.transportation.address_picker.cancel_button': 'Cancel',
+
   // MMB Support
   'mmb.support.phone.suggested': 'Suggested',
   'mmb.support.phone.all_numbers': 'All Numbers',
