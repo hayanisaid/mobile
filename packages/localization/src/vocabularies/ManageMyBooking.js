@@ -225,6 +225,8 @@ export default {
   'mmb.trip_service.transportation.map.legend.tap': 'Tap =',
   'mmb.trip_service.transportation.map.legend.markerA': 'from',
   'mmb.trip_service.transportation.map.legend.markerB': 'to',
+  'mmb.trip_service.transportation.address_picker.current_location_title':
+    'Your current location',
 
   // MMB Support
   'mmb.support.phone.suggested': 'Suggested',

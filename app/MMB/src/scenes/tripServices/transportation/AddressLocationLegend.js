@@ -9,10 +9,6 @@ export default function AddressLocationLegend() {
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: 'row' }}>
-        <TextIcon
-          code="&quot;"
-          style={[styles.icon, { color: Color.textLight }]}
-        />
         <Text style={styles.text}>
           <Translation id="mmb.trip_service.transportation.map.legend.long_tap" />
         </Text>
@@ -22,10 +18,6 @@ export default function AddressLocationLegend() {
         </Text>
       </View>
       <View style={{ flexDirection: 'row' }}>
-        <TextIcon
-          code="&quot;"
-          style={[styles.icon, { color: Color.textLight }]}
-        />
         <Text style={styles.text}>
           <Translation id="mmb.trip_service.transportation.map.legend.tap" />
         </Text>
@@ -44,6 +36,7 @@ export default function AddressLocationLegend() {
 const styles = StyleSheet.create({
   text: {
     color: Color.textLight,
+    fontSize: 18,
   },
   container: {
     height: 40,
@@ -64,7 +57,7 @@ const styles = StyleSheet.create({
     shadowOffset: { height: 0, width: 0 },
   },
   icon: {
-    fontSize: 14,
+    fontSize: 15,
     alignSelf: 'center',
     paddingHorizontal: 5,
   },

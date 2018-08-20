@@ -54,7 +54,9 @@ export default class AddressPickerScreen extends React.Component<Props> {
           onPress={todo}
           actionIcon={<View />}
           isActive={false}
-          title={<Translation passThrough={'Your current location'} />}
+          title={
+            <Translation id="mmb.trip_service.transportation.address_picker.current_location_title" />
+          }
           description={<Translation passThrough={currentLocation} />}
           icon={<TextIcon code="&quot;" />}
         />
