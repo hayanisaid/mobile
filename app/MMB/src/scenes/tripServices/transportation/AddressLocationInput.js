@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { TextInput as OriginalTextInput, View } from 'react-native';
-import { Text, StyleSheet, Color } from '@kiwicom/mobile-shared';
+import { Text, StyleSheet, Color, TextIcon } from '@kiwicom/mobile-shared';
 import { Translation } from '@kiwicom/mobile-localization';
 
 type Props = {|
@@ -30,19 +30,6 @@ export default class AddressLocationInput extends React.Component<
     };
   }
 
-  handlePlaceholder = (text: string) => {
-    this.setState(
-      {
-        displayPlaceholder: text === '',
-      },
-      () => {
-        if (this.props.onChangeText) {
-          this.props.onChangeText(text);
-        }
-      },
-    );
-  };
-
   render = () => (
     <View style={styleSheet.wrapper}>
       <OriginalTextInput
@@ -50,19 +37,20 @@ export default class AddressLocationInput extends React.Component<
         autoCorrect={false}
         {...this.props}
         placeholder={null}
-        onChangeText={this.handlePlaceholder}
         style={[styleSheet.text, styleSheet.input]}
+        autoFocus={true}
       />
 
-      {this.props.placeholder &&
-        this.state.displayPlaceholder && (
-          <Text
-            style={[styleSheet.text, styleSheet.placeholder]}
-            pointerEvents="none"
-          >
-            {this.props.placeholder}
-          </Text>
-        )}
+      <View style={styleSheet.placeholder}>
+        <TextIcon code="B" style={styleSheet.icon} />
+        <Text
+          style={
+            (styleSheet.text, { color: Color.textLight, paddingStart: 15 })
+          }
+        >
+          <Translation id="mmb.trip_services.transportation.address_picker.input.placeholder" />
+        </Text>
+      </View>
     </View>
   );
 }
@@ -78,10 +66,11 @@ const styleSheet = StyleSheet.create({
   },
   input: {
     flex: 1,
+    marginEnd: -60,
     color: Color.textDark,
     backgroundColor: Color.inputBackground,
     borderRadius: 6,
-    padding: 10,
+    paddingStart: 70,
   },
   wrapper: {
     flex: 1,
@@ -96,9 +85,14 @@ const styleSheet = StyleSheet.create({
     },
   },
   placeholder: {
+    flexDirection: 'row',
+    alignSelf: 'center',
     position: 'absolute',
-    padding: 10,
-    paddingVertical: 15,
+    paddingStart: 15,
+  },
+  icon: {
+    fontSize: 14,
+    alignSelf: 'center',
     color: Color.textLight,
   },
 });

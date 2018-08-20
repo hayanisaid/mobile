@@ -1,21 +1,28 @@
 // @flow
 
 import * as React from 'react';
-import { View, Platform, Linking } from 'react-native';
+import { View, Linking } from 'react-native';
 import MapView from 'react-native-maps';
 import { HeaderBackButton } from 'react-navigation';
-import { StyleSheet, DropMarker, Color } from '@kiwicom/mobile-shared';
-import { HeaderButton, HeaderTitle } from '@kiwicom/mobile-navigation';
+import { StyleSheet, PositionMarker, Color } from '@kiwicom/mobile-shared';
+import {
+  HeaderButton,
+  HeaderTitle,
+  type NavigationType,
+} from '@kiwicom/mobile-navigation';
 import { Translation, Alert } from '@kiwicom/mobile-localization';
 
 import MarkerLocationButton from './transportation/MarkerLocationButton';
 import CurrentPositionButton from './transportation/CurrentPositionButton';
+import AddressLocationLegend from './transportation/AddressLocationLegend';
 
-type State = {
+type State = {|
   region: Region,
   markers: Marker,
   destination: string,
-};
+  showUserLocation: boolean,
+  currentLocation: Region,
+|};
 
 type Region = {
   latitude: number,
@@ -40,8 +47,11 @@ type NativeEvent = {
   },
 };
 
-type Props = *;
-class TransportationMap extends React.Component<Props, State> {
+type Props = {|
+  +navigation: NavigationType,
+|};
+
+export default class TransportationMap extends React.Component<Props, State> {
   state = {
     region: {
       latitude: 51.11,
@@ -51,9 +61,16 @@ class TransportationMap extends React.Component<Props, State> {
     },
     markers: {},
     destination: '',
+    showUserLocation: false,
+    currentLocation: {
+      latitude: 0,
+      longitude: 0, // move center little bit right
+      latitudeDelta: 0,
+      longitudeDelta: 0,
+    },
   };
 
-  static navigationOptions = ({ navigation }) => {
+  static navigationOptions = ({ navigation }: Props) => {
     function goBack() {
       navigation.goBack(null);
     }
@@ -83,8 +100,15 @@ class TransportationMap extends React.Component<Props, State> {
     };
   };
 
-  openLocationPicker = () => {
-    this.props.navigation.navigate('AddressPickerScreen');
+  openLocationPicker = async () => {
+    const currentLocation = await this.getFormattedAddress(
+      this.state.currentLocation.latitude,
+      this.state.currentLocation.longitude,
+    );
+
+    this.props.navigation.navigate('AddressPickerScreen', {
+      currentLocation: currentLocation,
+    });
   };
 
   openSettings = () => {
@@ -110,7 +134,7 @@ class TransportationMap extends React.Component<Props, State> {
 
   renderMarkerB = (e: NativeEvent) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
-    this.getFormattedAddress(latitude, longitude);
+    this.setDestination(latitude, longitude);
     this.setState(state => ({
       markers: {
         ...state.markers,
@@ -124,7 +148,7 @@ class TransportationMap extends React.Component<Props, State> {
 
   getFormattedAddress = async (latitude: number, longitude: number) => {
     const address = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyBe164u1hIv7BMeGWG0alICABGscZlziek`,
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=API_KEY`,
     )
       .then(res => res.json())
       .then(json => json.results[0].address_components);
@@ -150,24 +174,34 @@ class TransportationMap extends React.Component<Props, State> {
       .filter(item => item !== undefined)
       .join(', ');
 
+    return formattedAddress;
+  };
+
+  setDestination = async (latitude: number, longitude: number) => {
+    const destination = await this.getFormattedAddress(latitude, longitude);
     this.setState({
-      destination: formattedAddress,
+      destination: destination,
     });
   };
 
   getCurrentPosition = () => {
     navigator.geolocation.getCurrentPosition(
       position => {
-        const region = {
+        const currentLocation = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           latitudeDelta: 0.0375,
           longitudeDelta: 0.0349,
         };
 
-        this.setState({
-          region: region,
-        });
+        this.setState(
+          {
+            currentLocation: currentLocation,
+          },
+          () => {
+            return currentLocation;
+          },
+        );
       },
       () => {
         return Alert.translatedAlert(
@@ -192,9 +226,20 @@ class TransportationMap extends React.Component<Props, State> {
     );
   };
 
+  showUserLocation = () => {
+    this.setState(state => ({
+      region: state.currentLocation,
+      showUserLocation: true,
+    }));
+  };
+
+  componentDidMount() {
+    this.getCurrentPosition();
+  }
+
   render() {
-    const { markerA, markerB } = this.state.markers;
-    const { destination } = this.state;
+    const { destination, showUserLocation, markers } = this.state;
+    const { markerA, markerB } = markers;
 
     return (
       <View style={{ flex: 1 }}>
@@ -209,6 +254,8 @@ class TransportationMap extends React.Component<Props, State> {
             onPress={this.renderMarkerB}
             onLongPress={this.renderMarkerA}
             scrollEnabled={true}
+            showsUserLocation={showUserLocation}
+            userLocationAnnotationTitle=""
             style={[StyleSheet.absoluteFillObject, styles.mapBottom]}
           >
             {markerA &&
@@ -220,7 +267,7 @@ class TransportationMap extends React.Component<Props, State> {
                     longitude: markerA.longitude,
                   }}
                 >
-                  <DropMarker size={30} />
+                  <PositionMarker code="j" />
                 </MapView.Marker>
               )}
             {markerB &&
@@ -232,12 +279,13 @@ class TransportationMap extends React.Component<Props, State> {
                     longitude: markerB.longitude,
                   }}
                 >
-                  <DropMarker size={30} color={Color.orange.normal} />
+                  <PositionMarker code="k" color={Color.orange.normal} />
                 </MapView.Marker>
               )}
           </MapView>
         </View>
-        <CurrentPositionButton onPress={this.getCurrentPosition} />
+        <AddressLocationLegend />
+        <CurrentPositionButton onPress={this.showUserLocation} />
       </View>
     );
   }
@@ -250,5 +298,3 @@ const styles = StyleSheet.create({
     },
   },
 });
-
-export default TransportationMap;

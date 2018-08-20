@@ -1,11 +1,34 @@
 // @flow
 
 import * as React from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Translation } from '@kiwicom/mobile-localization';
-import { HeaderButton } from '@kiwicom/mobile-navigation';
+import {
+  HeaderButton,
+  MenuItem,
+  type NavigationType,
+} from '@kiwicom/mobile-navigation';
+import { TextIcon } from '@kiwicom/mobile-shared';
 
-export default class AddressPickerScreen extends React.Component<*> {
+import AddressLocationInput from '../scenes/tripServices/transportation/AddressLocationInput';
+
+type Region = {
+  latitude: number,
+  longitude: number,
+  latitudeDelta: number,
+  longitudeDelta: number,
+};
+
+type Props = {
+  +navigation: NavigationType,
+  +currentLocation: string,
+};
+
+const todo = () => {
+  console.warn('TODO');
+};
+
+export default class AddressPickerScreen extends React.Component<Props> {
   static navigationOptions = (props: Props) => {
     function goBack() {
       props.navigation.goBack();
@@ -20,9 +43,22 @@ export default class AddressPickerScreen extends React.Component<*> {
           }
         />
       ),
+      headerTitle: <AddressLocationInput />,
     };
   };
   render() {
-    return <View />;
+    const currentLocation = this.props.currentLocation;
+    return (
+      <ScrollView>
+        <MenuItem
+          onPress={todo}
+          actionIcon={<View />}
+          isActive={false}
+          title={<Translation passThrough={'Your current location'} />}
+          description={<Translation passThrough={currentLocation} />}
+          icon={<TextIcon code="&quot;" />}
+        />
+      </ScrollView>
+    );
   }
 }

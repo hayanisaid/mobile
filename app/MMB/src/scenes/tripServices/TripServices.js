@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Translation } from '@kiwicom/mobile-localization';
 import { ScrollView } from 'react-native';
-import { TextIcon, WebView, TextInput } from '@kiwicom/mobile-shared';
+import { TextIcon, WebView } from '@kiwicom/mobile-shared';
 import { PublicApiRenderer, graphql } from '@kiwicom/mobile-relay';
 import {
   TitledMenuGroup,
@@ -48,7 +48,7 @@ export default class TripServices extends React.Component<Props> {
   };
 
   openTransportationMap = () => {
-    this.props.navigation.navigate('TransportationAddressPickerScreen');
+    this.props.navigation.navigate('TransportationMap');
   };
 
   renderLocalServices = (rendererProps: TripServicesQueryResponse) => {

@@ -6,7 +6,7 @@ import { Text, StyleSheet, TextIcon, Color } from '@kiwicom/mobile-shared';
 import { Translation } from '@kiwicom/mobile-localization';
 
 type Props = {|
-  +onPress: () => void,
+  +onPress: () => Promise<*>,
   +destination: ?string,
 |};
 
@@ -17,6 +17,7 @@ export default function MarkerLocationButton(props: Props) {
         <View style={styles.locationButton}>
           <TextIcon code="B" style={styles.icon} />
           <Text
+            numberOfLines={1}
             style={
               props.destination ? styles.locationText : styles.placeholderText
             }
@@ -50,9 +51,11 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     color: Color.textLight,
+    flex: 1,
   },
   locationText: {
     color: Color.textDark,
+    flex: 1,
   },
   icon: {
     marginHorizontal: 10,

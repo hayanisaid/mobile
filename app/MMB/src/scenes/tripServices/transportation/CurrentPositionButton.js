@@ -4,7 +4,11 @@ import * as React from 'react';
 import { View, TouchableWithoutFeedback } from 'react-native';
 import { StyleSheet, TextIcon, Color } from '@kiwicom/mobile-shared';
 
-export default function CurrentPositionButton(props) {
+type Props = {|
+  +onPress: () => void,
+|};
+
+export default function CurrentPositionButton(props: Props) {
   return (
     <View style={styles.roundButton}>
       <TouchableWithoutFeedback onPress={props.onPress}>
@@ -27,11 +31,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Color.white,
     shadowOpacity: 0.3,
-    shadowRadius: 5,
+    shadowRadius: 2,
     shadowColor: Color.black,
     shadowOffset: { height: 0, width: 0 },
     position: 'absolute',
-    bottom: 60,
+    bottom: 80,
     end: 20,
   },
   icon: {

@@ -70,8 +70,8 @@ const MainStack = StackNavigator(
 
 const TransportationStack = StackNavigator(
   {
-    AddressPickerScreen: AddressPickerScreen,
-    TransportationMap: TransportationMap,
+    AddressPickerScreen: withMappedProps(AddressPickerScreen),
+    TransportationMap: withMappedProps(TransportationMap),
   },
   {
     ...StackNavigatorOptions,
@@ -88,7 +88,7 @@ export default StackNavigator(
     TravelDocumentScreen: {
       screen: TravelDocumentStack,
     },
-    TransportationAddressPickerScreen: {
+    TransportationMap: {
       screen: TransportationStack,
     },
   },

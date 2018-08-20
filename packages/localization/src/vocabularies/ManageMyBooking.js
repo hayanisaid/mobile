@@ -220,6 +220,11 @@ export default {
   'mmb.trip_services.transportation.map.current_position_alert':
     'Location services are not available. You can enable them in settings.',
   'mmb.trip_services.transportation.address_picker.cancel_button': 'Cancel',
+  'mmb.trip_services.transportation.address_picker.input.placeholder': 'To: ',
+  'mmb.trip_service.transportation.map.legend.long_tap': 'Long tap =',
+  'mmb.trip_service.transportation.map.legend.tap': 'Tap =',
+  'mmb.trip_service.transportation.map.legend.markerA': 'from',
+  'mmb.trip_service.transportation.map.legend.markerB': 'to',
 
   // MMB Support
   'mmb.support.phone.suggested': 'Suggested',
