@@ -48,7 +48,7 @@ export default class TripServices extends React.Component<Props> {
   };
 
   openTransportationMap = () => {
-    this.props.navigation.navigate('TransportationMap');
+    this.props.navigation.navigate('TransportationMap', {});
   };
 
   renderLocalServices = (rendererProps: TripServicesQueryResponse) => {

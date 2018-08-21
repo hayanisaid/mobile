@@ -10,7 +10,13 @@ import {
   HeaderTitle,
   type NavigationType,
 } from '@kiwicom/mobile-navigation';
-import { Translation, Alert } from '@kiwicom/mobile-localization';
+import {
+  Translation,
+  Alert,
+  DeviceInfo,
+  DateFormatter,
+  DateUtils,
+} from '@kiwicom/mobile-localization';
 
 import MarkerLocationButton from './transportation/MarkerLocationButton';
 import CurrentPositionButton from './transportation/CurrentPositionButton';
@@ -18,7 +24,7 @@ import AddressLocationLegend from './transportation/AddressLocationLegend';
 
 type State = {|
   region: Region,
-  markers: Marker,
+  markers: Markers,
   destination: string,
   showUserLocation: boolean,
   currentLocation: Region,
@@ -31,11 +37,16 @@ type Region = {
   longitudeDelta: number,
 };
 
+type Markers = {
+  markerA: Marker,
+  markerB: Marker,
+  isMarkerAChanged: boolean,
+  isMarkerBChanged: boolean,
+};
+
 type Marker = {
-  [key: string]: {
-    latitude: number,
-    longitude: number,
-  },
+  latitude: number,
+  longitude: number,
 };
 
 type NativeEvent = {
@@ -51,6 +62,11 @@ type Props = {|
   +navigation: NavigationType,
 |};
 
+const language = DeviceInfo.getLanguage() || 'en-gb';
+const currency = 'GBP';
+const date = DateFormatter(DateUtils().addDays(2)).formatForMachine();
+const noop = () => {};
+
 export default class TransportationMap extends React.Component<Props, State> {
   state = {
     region: {
@@ -59,12 +75,23 @@ export default class TransportationMap extends React.Component<Props, State> {
       latitudeDelta: 0.0375,
       longitudeDelta: 0.0349,
     },
-    markers: {},
+    markers: {
+      isMarkerAChanged: false,
+      isMarkerBChanged: false,
+      markerA: {
+        latitude: 0,
+        longitude: 0,
+      },
+      markerB: {
+        latitude: 0,
+        longitude: 0,
+      },
+    },
     destination: '',
     showUserLocation: false,
     currentLocation: {
       latitude: 0,
-      longitude: 0, // move center little bit right
+      longitude: 0,
       latitudeDelta: 0,
       longitudeDelta: 0,
     },
@@ -75,9 +102,8 @@ export default class TransportationMap extends React.Component<Props, State> {
       navigation.goBack(null);
     }
 
-    function todo() {
-      console.warn('TODO');
-    }
+    const openLink = navigation.state.params.openLink;
+    const disabled = navigation.state.params.disabled;
 
     return {
       headerLeft: <HeaderBackButton tintColor={Color.brand} onPress={goBack} />,
@@ -87,7 +113,7 @@ export default class TransportationMap extends React.Component<Props, State> {
         </HeaderTitle>
       ),
       headerRight: (
-        <HeaderButton.Right onPress={todo}>
+        <HeaderButton.Right onPress={openLink} disabled={disabled}>
           <HeaderButton.Text>
             <Translation id="mmb.trip_services.transportation.map.right_button" />
           </HeaderButton.Text>
@@ -100,11 +126,28 @@ export default class TransportationMap extends React.Component<Props, State> {
     };
   };
 
+  componentDidMount() {
+    this.props.navigation.setParams({ disabled: true, openLink: noop });
+    this.getCurrentPosition();
+  }
+
+  componentDidUpdate() {
+    const { navigation } = this.props;
+
+    if (
+      this.state.markers.isMarkerAChanged &&
+      this.state.markers.isMarkerBChanged &&
+      navigation.state.params.disabled
+    ) {
+      navigation.setParams({ disabled: false });
+      navigation.setParams({ openLink: this.openLink });
+    }
+  }
+
   openLocationPicker = async () => {
-    const currentLocation = await this.getFormattedAddress(
-      this.state.currentLocation.latitude,
-      this.state.currentLocation.longitude,
-    );
+    const { latitude, longitude } = this.state.currentLocation;
+
+    const currentLocation = await this.getFormattedAddress(latitude, longitude);
 
     this.props.navigation.navigate('AddressPickerScreen', {
       currentLocation: currentLocation,
@@ -119,11 +162,22 @@ export default class TransportationMap extends React.Component<Props, State> {
     this.setState({ region });
   };
 
+  openLink = () => {
+    const { markerA, markerB } = this.state.markers;
+    const pickup = `${markerA.latitude},${markerA.longitude}`;
+    const dropoff = `${markerB.latitude},${markerB.longitude}`;
+
+    this.props.navigation.navigate('mmb.trip_services.webview', {
+      url: `https://kiwi.rideways.com/?pickup=${pickup}&dropoff=${dropoff}&date=${date}&lang=${language}&currency=${currency}&utm_source=kiwi&utm_medium=stratpart&utm_campaign=mobileappc`,
+    });
+  };
+
   renderMarkerA = (e: NativeEvent) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
     this.setState(state => ({
       markers: {
         ...state.markers,
+        isMarkerAChanged: true,
         markerA: {
           latitude,
           longitude,
@@ -138,6 +192,7 @@ export default class TransportationMap extends React.Component<Props, State> {
     this.setState(state => ({
       markers: {
         ...state.markers,
+        isMarkerBChanged: true,
         markerB: {
           latitude,
           longitude,
@@ -232,10 +287,6 @@ export default class TransportationMap extends React.Component<Props, State> {
       showUserLocation: true,
     }));
   };
-
-  componentDidMount() {
-    this.getCurrentPosition();
-  }
 
   render() {
     const { destination, showUserLocation, markers } = this.state;

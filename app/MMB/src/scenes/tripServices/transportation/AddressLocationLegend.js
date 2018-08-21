@@ -36,7 +36,7 @@ export default function AddressLocationLegend() {
 const styles = StyleSheet.create({
   text: {
     color: Color.textLight,
-    fontSize: 18,
+    fontSize: 16,
   },
   container: {
     height: 40,
