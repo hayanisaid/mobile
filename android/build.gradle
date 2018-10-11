@@ -18,9 +18,12 @@ buildscript {
     }
 }
 
+apply plugin: 'kotlin'
+
 allprojects {
     repositories {
         mavenLocal()
+        mavenCentral()
         jcenter()
         google()
         maven {
